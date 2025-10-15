@@ -1,6 +1,20 @@
 import { X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const LoginModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onClose()
+    navigate('/thank-you')
+  }
+
+  const handleSocialLogin = () => {
+    onClose()
+    navigate('/thank-you')
+  }
+
   if (!isOpen) return null
 
   return (
@@ -22,7 +36,7 @@ const LoginModal = ({ isOpen, onClose }) => {
           </h2>
 
           {/* Email Form */}
-          <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="mt-6" onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email address
@@ -55,6 +69,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             {/* Social Login Buttons */}
             <button
               type="button"
+              onClick={handleSocialLogin}
               className="w-full border border-gray-300 py-3 rounded font-medium hover:bg-gray-50 transition-colors mb-3 flex items-center justify-center gap-2"
             >
               <svg viewBox="0 0 24 24" width="20" height="20">
@@ -68,6 +83,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
             <button
               type="button"
+              onClick={handleSocialLogin}
               className="w-full border border-gray-300 py-3 rounded font-medium hover:bg-gray-50 transition-colors mb-4 flex items-center justify-center gap-2"
             >
               <svg viewBox="0 0 24 24" width="20" height="20">

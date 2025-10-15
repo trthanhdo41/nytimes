@@ -1,6 +1,14 @@
 import { X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const SubscribeModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
+
+  const handleSubscribe = () => {
+    onClose()
+    navigate('/thank-you')
+  }
+
   if (!isOpen) return null
 
   return (
@@ -46,11 +54,17 @@ const SubscribeModal = ({ isOpen, onClose }) => {
 
           {/* Subscribe Options */}
           <div className="space-y-3 mb-5">
-            <button className="w-full bg-[#326891] text-white py-3 rounded text-[15px] font-bold hover:bg-[#2a5a7a] transition-colors">
+            <button 
+              onClick={handleSubscribe}
+              className="w-full bg-[#326891] text-white py-3 rounded text-[15px] font-bold hover:bg-[#2a5a7a] transition-colors"
+            >
               Subscribe now for $40/year
             </button>
             
-            <button className="w-full border-2 border-gray-300 py-3 rounded text-[15px] font-bold hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleSubscribe}
+              className="w-full border-2 border-gray-300 py-3 rounded text-[15px] font-bold hover:bg-gray-50 transition-colors"
+            >
               Subscribe now for $5/month
             </button>
           </div>

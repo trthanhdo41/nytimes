@@ -286,14 +286,15 @@ const Header = () => {
                         <ul className="space-y-0.5">
                           {category.subcategories.map((sub, idx) => (
                             <li key={idx}>
-                              <button
+                              <Link
+                                to={`/category/${category.slug}`}
                                 onMouseEnter={() => setActiveSubcategory(idx)}
-                                className={`block w-full text-left px-6 py-2.5 text-[13px] font-bold transition-colors ${
+                                className={`block w-full text-left px-6 py-2.5 text-[13px] font-bold transition-colors hover:underline ${
                                   activeSubcategory === idx ? 'bg-white' : 'hover:bg-white'
                                 }`}
                               >
                                 {sub.name}
-                              </button>
+                              </Link>
                             </li>
                           ))}
                         </ul>
@@ -313,7 +314,7 @@ const Header = () => {
                                     {group.items.map((item, itemIdx) => (
                                       <li key={itemIdx}>
                                         <Link
-                                          to={`/category/${item.slug}`}
+                                          to={`/category/${category.slug}`}
                                           className="text-[13px] hover:underline block text-gray-700 hover:text-black transition-colors"
                                         >
                                           {item.name}

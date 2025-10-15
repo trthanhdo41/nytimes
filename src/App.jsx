@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import CategoryPage from './pages/CategoryPage'
 import ProductPage from './pages/ProductPage'
+import ThankYouPage from './pages/ThankYouPage'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ArticleEditor from './pages/admin/ArticleEditor'
@@ -79,6 +80,7 @@ function App() {
                   <Route path="/category/:slug" element={<CategoryPage />} />
                   <Route path="/article/:slug" element={<ProductPage />} />
                   <Route path="/product/:slug" element={<ProductPage />} />
+                  <Route path="/thank-you" element={<ThankYouPage />} />
                 </Routes>
                 <Footer />
               </div>
