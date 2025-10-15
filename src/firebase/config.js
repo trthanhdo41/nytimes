@@ -4,14 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration
-// TODO: Replace with your Firebase project credentials
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB13TW1mqP_j5ALvO8D0dOn_GDyyeizvfs",
+  authDomain: "wirecutter-clone-1.firebaseapp.com",
+  projectId: "wirecutter-clone-1",
+  storageBucket: "wirecutter-clone-1.firebasestorage.app",
+  messagingSenderId: "336030760315",
+  appId: "1:336030760315:web:54397bdbaeefb40509d1de"
 };
 
 // Initialize Firebase

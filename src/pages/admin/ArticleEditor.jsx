@@ -3,16 +3,13 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { 
   Save, 
   ArrowLeft, 
-  Image as ImageIcon, 
-  X,
   AlertCircle,
   Loader
 } from 'lucide-react';
 import {
   createArticle,
   updateArticle,
-  getArticleById,
-  uploadImage
+  getArticleById
 } from '../../firebase/articleService';
 
 const ArticleEditor = () => {
@@ -22,9 +19,7 @@ const ArticleEditor = () => {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const [imagePreview, setImagePreview] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -34,7 +29,6 @@ const ArticleEditor = () => {
     excerpt: '',
     content: '',
     mainImage: '',
-    mainImagePath: '',
     featured: false,
     tags: []
   });
@@ -69,11 +63,9 @@ const ArticleEditor = () => {
         excerpt: article.excerpt || '',
         content: article.content || '',
         mainImage: article.mainImage || '',
-        mainImagePath: article.mainImagePath || '',
         featured: article.featured || false,
         tags: article.tags || []
       });
-      setImagePreview(article.mainImage || '');
     } catch (error) {
       console.error('Error loading article:', error);
       setError('Failed to load article. Please try again.');
@@ -106,59 +98,6 @@ const ArticleEditor = () => {
         [name]: type === 'checkbox' ? checked : value
       });
     }
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image size should be less than 5MB');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      setError('');
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-
-      // Upload to Firebase
-      const { url, path } = await uploadImage(file, 'articles');
-      
-      setFormData({
-        ...formData,
-        mainImage: url,
-        mainImagePath: path
-      });
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      setError('Failed to upload image. Please try again.');
-      setImagePreview('');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData({
-      ...formData,
-      mainImage: '',
-      mainImagePath: ''
-    });
-    setImagePreview('');
   };
 
   const handleSubmit = async (e) => {
@@ -341,40 +280,35 @@ const ArticleEditor = () => {
           <div className="bg-white p-6 rounded-lg border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Featured Image</h3>
             
-            {imagePreview ? (
-              <div className="relative">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image URL
+              </label>
+              <input
+                type="url"
+                name="mainImage"
+                value={formData.mainImage}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                placeholder="https://example.com/image.jpg"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Paste image URL from Imgur, Unsplash, Picsum, or any image hosting service
+              </p>
+            </div>
+            
+            {formData.mainImage && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
                 <img
-                  src={imagePreview}
+                  src={formData.mainImage}
                   alt="Preview"
                   className="w-full h-64 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
                 />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
               </div>
-            ) : (
-              <label className="block">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-secondary transition-colors">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    {uploading ? 'Uploading...' : 'Click to upload image'}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF up to 5MB
-                  </p>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
             )}
           </div>
 

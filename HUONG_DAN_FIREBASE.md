@@ -106,36 +106,7 @@ service cloud.firestore {
 
 3. Nhấn **"Publish"** (Xuất bản)
 
-## Bước 9: Tạo Firebase Storage (Lưu trữ ảnh)
-
-1. Trong Firebase Console, vào **"Build" > "Storage"**
-2. Nhấn **"Get started"** (Bắt đầu)
-3. Nhấn **"Next"** (Tiếp tục - giữ production mode)
-4. Chọn vị trí (giống với Firestore)
-5. Nhấn **"Done"** (Xong)
-
-## Bước 10: Cài Đặt Storage Security Rules
-
-1. Trong Storage, nhấn tab **"Rules"** (Quy tắc)
-2. Thay thế toàn bộ nội dung bằng code này:
-
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /articles/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null
-                   && request.resource.size < 5 * 1024 * 1024  // Tối đa 5MB
-                   && request.resource.contentType.matches('image/.*');
-    }
-  }
-}
-```
-
-3. Nhấn **"Publish"** (Xuất bản)
-
-## Bước 11: Kiểm Tra
+## Bước 9: Kiểm Tra
 
 1. Chạy lệnh:
    ```bash
@@ -148,17 +119,25 @@ service firebase.storage {
 
 4. Bạn sẽ thấy trang Admin Dashboard!
 
-## Bước 12: Tạo Bài Viết Đầu Tiên
+## Bước 10: Tạo Bài Viết Đầu Tiên
 
 1. Nhấn nút **"New Article"** (Bài viết mới)
 2. Điền form:
-   - Title (Tiêu đề): "Bài viết test"
-   - Category (Danh mục): Chọn bất kỳ
-   - Author (Tác giả): Tên bạn
-   - Upload ảnh
-   - Viết excerpt (tóm tắt) và content (nội dung)
+   - **Title** (Tiêu đề): "Bài viết test"
+   - **Category** (Danh mục): Chọn bất kỳ
+   - **Author** (Tác giả): Tên bạn
+   - **Image URL** (Link ảnh): Paste link ảnh bất kỳ
+     - Ví dụ: `https://picsum.photos/800/600`
+     - Hoặc upload ảnh lên Imgur.com rồi copy link
+   - **Excerpt** (Tóm tắt): Viết vài dòng mô tả
+   - **Content** (Nội dung): Viết nội dung bài viết
 3. Nhấn **"Save Article"** (Lưu bài viết)
 4. Vào trang chủ để xem bài viết!
+
+### Gợi ý nguồn ảnh miễn phí:
+- **Picsum**: `https://picsum.photos/800/600` (ảnh random)
+- **Unsplash**: https://unsplash.com (download rồi upload lên Imgur)
+- **Imgur**: https://imgur.com/upload (upload ảnh, copy link)
 
 ---
 
@@ -170,10 +149,6 @@ service firebase.storage {
 ### Lỗi: "Missing or insufficient permissions"
 - Kiểm tra lại Firestore Security Rules (Bước 8)
 - Đảm bảo bạn đã đăng nhập
-
-### Upload ảnh không được
-- Kiểm tra lại Storage Security Rules (Bước 10)
-- Đảm bảo ảnh nhỏ hơn 5MB
 
 ### Không đăng nhập được
 - Kiểm tra Email/Password đã bật chưa (Bước 5)
