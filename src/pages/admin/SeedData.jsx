@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Database, AlertCircle, CheckCircle } from 'lucide-react';
 import { seedDatabase } from '../../utils/seedData';
+import { seedDeals } from '../../utils/seedDeals';
 
 const SeedData = () => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +10,7 @@ const SeedData = () => {
   const [error, setError] = useState('');
 
   const handleSeed = async () => {
-    if (!window.confirm('Are you sure you want to import sample articles? This will add ~25 articles to your database.')) {
+    if (!window.confirm('Are you sure you want to import sample data? This will add ~25 articles and 5 deals to your database.')) {
       return;
     }
 
@@ -18,8 +19,17 @@ const SeedData = () => {
     setResult(null);
 
     try {
+      // Seed articles
       const { successCount, errorCount } = await seedDatabase();
-      setResult({ successCount, errorCount });
+      
+      // Seed deals
+      const dealIds = await seedDeals();
+      
+      setResult({ 
+        successCount, 
+        errorCount,
+        dealCount: dealIds.length 
+      });
     } catch (err) {
       console.error('Seed error:', err);
       setError('Failed to seed database. Please try again.');
@@ -74,7 +84,7 @@ const SeedData = () => {
                     Import Complete!
                   </p>
                   <p className="text-sm text-green-700">
-                    Successfully imported {result.successCount} articles.
+                    Successfully imported {result.successCount} articles and {result.dealCount || 0} deals.
                     {result.errorCount > 0 && ` Failed: ${result.errorCount}`}
                   </p>
                 </div>

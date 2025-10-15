@@ -8,17 +8,23 @@ import {
   Search,
   Eye,
   Star,
-  AlertCircle
+  AlertCircle,
+  DollarSign
 } from 'lucide-react';
 import { logout } from '../../firebase/authService';
 import { getAllArticles, deleteArticle } from '../../firebase/articleService';
+import { getAllDeals, deleteDeal } from '../../firebase/dealService';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState('articles'); // 'articles' or 'deals'
   const [articles, setArticles] = useState([]);
+  const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -58,6 +64,25 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Delete error:', error);
       alert('Failed to delete article. Please try again.');
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      setDeletingAll(true);
+      
+      // Delete all articles one by one
+      const deletePromises = articles.map(article => deleteArticle(article.id));
+      await Promise.all(deletePromises);
+      
+      setArticles([]);
+      setShowDeleteAllModal(false);
+      alert('All articles deleted successfully!');
+    } catch (error) {
+      console.error('Delete all error:', error);
+      alert('Failed to delete all articles. Some articles may remain.');
+    } finally {
+      setDeletingAll(false);
     }
   };
 
@@ -114,7 +139,7 @@ const AdminDashboard = () => {
             />
           </div>
           <div className="flex gap-3">
-            {articles.length === 0 && (
+            {articles.length === 0 ? (
               <Link
                 to="/admin/seed"
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
@@ -122,6 +147,14 @@ const AdminDashboard = () => {
                 <PlusCircle className="w-5 h-5" />
                 Import Sample Data
               </Link>
+            ) : (
+              <button
+                onClick={() => setShowDeleteAllModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                <Trash2 className="w-5 h-5" />
+                Delete All Articles
+              </button>
             )}
             <Link
               to="/admin/articles/new"
@@ -297,6 +330,37 @@ const AdminDashboard = () => {
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete All Confirmation Modal */}
+      {showDeleteAllModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[1000]">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-red-600 mb-2">⚠️ Delete All Articles?</h3>
+            <p className="text-gray-900 font-medium mb-2">
+              You are about to delete ALL {articles.length} articles!
+            </p>
+            <p className="text-gray-600 mb-6">
+              This action cannot be undone. All your articles will be permanently removed from the database.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteAllModal(false)}
+                disabled={deletingAll}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                disabled={deletingAll}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deletingAll ? 'Deleting...' : 'Yes, Delete All'}
               </button>
             </div>
           </div>
