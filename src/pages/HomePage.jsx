@@ -1,11 +1,74 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ArticleCard from '../components/ArticleCard'
 import DealCard from '../components/DealCard'
+import { getAllArticles, getFeaturedArticles, getLatestArticles } from '../firebase/articleService'
 
 const HomePage = () => {
-  const disclaimer = "We independently review everything we recommend. When you buy through our links, we may earn a commission."
+  const [latestArticles, setLatestArticles] = useState([])
+  const [featuredArticle, setFeaturedArticle] = useState(null)
+  const [allArticles, setAllArticles] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const latestArticles = [
+  const disclaimer = "We independently review everything we recommend. When you buy through our links, we may earn a commission."
+  
+  // Load articles from Firebase
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch featured articles
+        const featured = await getFeaturedArticles(1)
+        if (featured.length > 0) {
+          setFeaturedArticle({
+            id: featured[0].id,
+            slug: featured[0].slug,
+            title: featured[0].title,
+            author: featured[0].author,
+            excerpt: featured[0].excerpt,
+            image: featured[0].mainImage
+          })
+        }
+        
+        // Fetch latest articles
+        const latest = await getLatestArticles(10)
+        setLatestArticles(latest.map(a => ({
+          id: a.id,
+          slug: a.slug,
+          title: a.title,
+          date: formatDate(a.createdAt)
+        })))
+        
+        // Fetch all articles for sections
+        const all = await getAllArticles()
+        setAllArticles(all)
+        
+      } catch (error) {
+        console.error('Error loading articles:', error)
+        // Keep empty state if Firebase not configured
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadArticles()
+  }, [])
+  
+  const formatDate = (date) => {
+    if (!date) return 'Recent'
+    const now = new Date()
+    const articleDate = new Date(date)
+    const diffDays = Math.floor((now - articleDate) / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 0) return 'Today'
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays} days ago`
+    return articleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+  
+  // Dummy data as fallback
+  const dummyLatestArticles = [
     { id: 1, slug: 'puzzles-toys-2-year-olds', title: 'The Best Puzzles, Animal Toys, and More for Energetic 2-Year-Olds', date: 'Today' },
     { id: 2, slug: 'gag-gifts', title: 'Gag Gifts (That They Might Actually Use)', date: 'Today' },
     { id: 3, slug: 'colored-pencils', title: 'The Best Colored Pencils', date: 'Today' },
@@ -15,13 +78,17 @@ const HomePage = () => {
     { id: 7, slug: 'halloween-tricks', title: 'Be a Neighborhood Legend With These 5 Halloween Tricks From a Wirecutter Gadget Expert', date: 'Today' },
   ]
 
-  const featuredArticle = {
+  const dummyFeaturedArticle = {
     slug: 'best-sweatshirts-sweatpants',
     title: 'The Best Sweatshirts and Sweatpants',
     author: 'Zoe Vanderweide',
     excerpt: 'After months of lounging around in sweatsuits, we found 24 women\'s, men\'s, and unisex styles that both look and feel terrific.',
     image: 'https://picsum.photos/800/500?random=1',
   }
+  
+  // Use Firebase data if available, otherwise use dummy data
+  const displayLatestArticles = latestArticles.length > 0 ? latestArticles : dummyLatestArticles
+  const displayFeaturedArticle = featuredArticle || dummyFeaturedArticle
 
   const deals = [
     {
@@ -260,7 +327,7 @@ const HomePage = () => {
             <div className="mb-6">
               <h2 className="text-[26px] font-bold mb-4 pb-2 border-b-[3px] border-black section-title">The latest</h2>
               <div className="space-y-0">
-                {latestArticles.map((article) => (
+                {displayLatestArticles.map((article) => (
                   <ArticleCard key={article.id} article={article} layout="list" />
                 ))}
               </div>
@@ -274,20 +341,20 @@ const HomePage = () => {
           <div className="lg:col-span-6">
             {/* Featured Article */}
             <div className="mb-10">
-              <Link to={`/article/${featuredArticle.slug}`} className="block mb-4">
+              <Link to={`/article/${displayFeaturedArticle.slug}`} className="block mb-4">
                 <img
-                  src={featuredArticle.image}
-                  alt={featuredArticle.title}
+                  src={displayFeaturedArticle.image}
+                  alt={displayFeaturedArticle.title}
                   className="w-full aspect-[16/9] object-cover"
                 />
               </Link>
               <h1 className="text-[40px] font-bold mb-3 leading-[1.05] section-title">
-                <Link to={`/article/${featuredArticle.slug}`} className="hover:underline">
-                  {featuredArticle.title}
+                <Link to={`/article/${displayFeaturedArticle.slug}`} className="hover:underline">
+                  {displayFeaturedArticle.title}
                 </Link>
               </h1>
-              <p className="text-[14px] text-gray-800 mb-2">by {featuredArticle.author}</p>
-              <p className="text-[15px] text-gray-900 leading-[1.5]">{featuredArticle.excerpt}</p>
+              <p className="text-[14px] text-gray-800 mb-2">by {displayFeaturedArticle.author}</p>
+              <p className="text-[15px] text-gray-900 leading-[1.5]">{displayFeaturedArticle.excerpt}</p>
             </div>
 
             {/* All Sections */}

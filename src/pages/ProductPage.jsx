@@ -1,12 +1,34 @@
 import { useParams, Link } from 'react-router-dom'
 import { Bookmark, ExternalLink } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getArticleBySlug } from '../firebase/articleService'
 
 const ProductPage = () => {
   const { slug } = useParams()
   const [bookmarked, setBookmarked] = useState({})
+  const [article, setArticle] = useState(null)
+  const [loading, setLoading] = useState(true)
+  
+  // Load article from Firebase
+  useEffect(() => {
+    const loadArticle = async () => {
+      try {
+        setLoading(true)
+        const data = await getArticleBySlug(slug)
+        setArticle(data)
+      } catch (error) {
+        console.error('Error loading article:', error)
+        // Use dummy data if Firebase not configured or article not found
+        setArticle(dummyArticle)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadArticle()
+  }, [slug])
 
-  const article = {
+  const dummyArticle = {
     title: 'The Best Cutting Boards',
     category: 'Kitchen',
     categorySlug: 'kitchen',
@@ -88,6 +110,31 @@ We tested each board by using it to prep a variety of foods, including vegetable
 
   const toggleBookmark = (id) => {
     setBookmarked(prev => ({ ...prev, [id]: !prev[id] }))
+  }
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading article...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Show error if article not found
+  if (!article) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Article Not Found</h1>
+          <p className="text-gray-600 mb-6">The article you're looking for doesn't exist.</p>
+          <Link to="/" className="text-secondary hover:underline">Go back to homepage</Link>
+        </div>
+      </div>
+    )
   }
 
   return (
