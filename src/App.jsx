@@ -9,6 +9,7 @@ import ProductPage from './pages/ProductPage'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ArticleEditor from './pages/admin/ArticleEditor'
+import SeedData from './pages/admin/SeedData'
 
 function App() {
   return (
@@ -38,6 +39,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ArticleEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/seed"
+            element={
+              <ProtectedRoute>
+                <SeedData />
               </ProtectedRoute>
             }
           />

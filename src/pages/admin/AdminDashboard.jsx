@@ -113,13 +113,24 @@ const AdminDashboard = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
             />
           </div>
-          <Link
-            to="/admin/articles/new"
-            className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <PlusCircle className="w-5 h-5" />
-            New Article
-          </Link>
+          <div className="flex gap-3">
+            {articles.length === 0 && (
+              <Link
+                to="/admin/seed"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                <PlusCircle className="w-5 h-5" />
+                Import Sample Data
+              </Link>
+            )}
+            <Link
+              to="/admin/articles/new"
+              className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <PlusCircle className="w-5 h-5" />
+              New Article
+            </Link>
+          </div>
         </div>
 
         {/* Error Message */}
