@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Menu, X } from 'lucide-react'
 import LoginModal from './LoginModal'
@@ -10,6 +10,34 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [subscribeModalOpen, setSubscribeModalOpen] = useState(false)
+  const [placeholderIndex, setPlaceholderIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+
+  const placeholders = [
+    'Show me the research on...',
+    'Find the best vacuum cleaners',
+    'Best headphones for work',
+    'How to pick the best mattress',
+    'Kitchen tools I actually need',
+    'Best gifts under $50',
+    'Top-rated air purifiers',
+    'What are the best laptops?',
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsTransitioning(true)
+      
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length)
+        setIsTransitioning(false)
+      }, 300) // Fade out duration
+    }, 3000) // Thay đổi mỗi 3 giây
+
+    return () => clearInterval(interval)
+  }, [])
 
   const menuCategories = [
     {
@@ -179,12 +207,26 @@ const Header = () => {
             {/* Search Bar */}
             <div className="hidden md:flex flex-1 max-w-[400px] mx-12">
               <div className="relative w-full">
-                <Search className="absolute left-3 top-2.5 text-gray-500" size={16} />
-                <input
-                  type="text"
-                  placeholder="Show me the research on..."
-                  className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-gray-500"
-                />
+                <Search className="absolute left-3 top-2.5 text-gray-500 z-10" size={16} />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                    className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-gray-500"
+                  />
+                  {!searchFocused && !searchValue && (
+                    <div 
+                      className={`absolute left-9 top-2 text-sm text-gray-500 pointer-events-none transition-opacity duration-300 ${
+                        isTransitioning ? 'opacity-0' : 'opacity-100'
+                      }`}
+                    >
+                      {placeholders[placeholderIndex]}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

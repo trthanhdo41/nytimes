@@ -163,3 +163,19 @@ button {
   transform: scale(1.05);
 }
 
+/* Placeholder Animation */
+@keyframes fadeInPlaceholder {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input::placeholder {
+  animation: fadeInPlaceholder 0.5s ease-in-out;
+}
+
