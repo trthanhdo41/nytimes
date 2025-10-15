@@ -69,7 +69,7 @@ const seedArticles = [
     slug: 'best-laptop',
     category: 'Tech',
     author: 'Kimber Streams',
-    excerpt: 'The Apple MacBook Air M2 is the best laptop for most people because it's fast, has great battery life, and is reasonably priced.',
+    excerpt: 'The Apple MacBook Air M2 is the best laptop for most people because it\'s fast, has great battery life, and is reasonably priced.',
     content: `<p>After testing 20 laptops, we recommend the MacBook Air M2 for most people. It's powerful enough for everyday tasks and has excellent battery life.</p>`,
     mainImage: 'https://picsum.photos/800/600?random=202',
     featured: false
@@ -175,7 +175,7 @@ const seedArticles = [
     slug: 'best-stroller',
     category: 'Baby & Kid',
     author: 'Wirecutter Staff',
-    excerpt: 'The Baby Jogger City Mini GT2 is the best stroller because it's easy to fold, maneuvers well, and has great suspension.',
+    excerpt: 'The Baby Jogger City Mini GT2 is the best stroller because it\'s easy to fold, maneuvers well, and has great suspension.',
     content: `<p>After testing 12 strollers, we recommend the Baby Jogger City Mini GT2. It's compact, smooth, and built to last.</p>`,
     mainImage: 'https://picsum.photos/800/600?random=502',
     featured: false
@@ -208,7 +208,7 @@ const seedArticles = [
     category: 'Style',
     author: 'Wirecutter Staff',
     excerpt: 'Levi\'s 501 Original Fit Jeans are the best jeans for most people because they fit well and are built to last.',
-    content: `<p>After trying on dozens of jeans, we recommend Levi's 501s. They're classic, comfortable, and durable.</p>`,
+    content: `<p>After trying on dozens of jeans, we recommend Levi\'s 501s. They\'re classic, comfortable, and durable.</p>`,
     mainImage: 'https://picsum.photos/800/600?random=602',
     featured: false
   },
@@ -249,7 +249,7 @@ const seedArticles = [
     slug: 'best-keyboard',
     category: 'Electronics',
     author: 'Kimber Streams',
-    excerpt: 'The Keychron K8 is the best keyboard because it's comfortable to type on and works with any device.',
+    excerpt: 'The Keychron K8 is the best keyboard because it\'s comfortable to type on and works with any device.',
     content: `<p>After testing 25 keyboards, we recommend the Keychron K8. It has great switches and connects via Bluetooth or cable.</p>`,
     mainImage: 'https://picsum.photos/800/600?random=703',
     featured: false
