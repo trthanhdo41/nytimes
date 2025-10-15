@@ -21,14 +21,15 @@ const ARTICLES_COLLECTION = 'articles';
 export const getAllArticles = async () => {
   try {
     const articlesRef = collection(db, ARTICLES_COLLECTION);
-    const q = query(articlesRef, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    const snapshot = await getDocs(articlesRef);
+    const articles = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate()
     }));
+    // Sort by createdAt descending (newest first)
+    return articles.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   } catch (error) {
     console.error('Error getting articles:', error);
     throw error;
@@ -39,18 +40,16 @@ export const getAllArticles = async () => {
 export const getArticlesByCategory = async (category) => {
   try {
     const articlesRef = collection(db, ARTICLES_COLLECTION);
-    const q = query(
-      articlesRef, 
-      where('category', '==', category),
-      orderBy('createdAt', 'desc')
-    );
+    const q = query(articlesRef, where('category', '==', category));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    const articles = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate()
     }));
+    // Sort by createdAt descending (newest first)
+    return articles.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   } catch (error) {
     console.error('Error getting articles by category:', error);
     throw error;
@@ -180,19 +179,18 @@ export const deleteArticle = async (id) => {
 export const getFeaturedArticles = async (limitCount = 5) => {
   try {
     const articlesRef = collection(db, ARTICLES_COLLECTION);
-    const q = query(
-      articlesRef, 
-      where('featured', '==', true),
-      orderBy('createdAt', 'desc'),
-      limit(limitCount)
-    );
+    const q = query(articlesRef, where('featured', '==', true));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    const articles = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate()
     }));
+    // Sort by createdAt descending and limit
+    return articles
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      .slice(0, limitCount);
   } catch (error) {
     console.error('Error getting featured articles:', error);
     throw error;
@@ -203,18 +201,17 @@ export const getFeaturedArticles = async (limitCount = 5) => {
 export const getLatestArticles = async (limitCount = 10) => {
   try {
     const articlesRef = collection(db, ARTICLES_COLLECTION);
-    const q = query(
-      articlesRef, 
-      orderBy('createdAt', 'desc'),
-      limit(limitCount)
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    const snapshot = await getDocs(articlesRef);
+    const articles = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate()
     }));
+    // Sort by createdAt descending and limit
+    return articles
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      .slice(0, limitCount);
   } catch (error) {
     console.error('Error getting latest articles:', error);
     throw error;
