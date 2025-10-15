@@ -34,6 +34,7 @@ const ArticleEditor = () => {
   });
 
   const categories = [
+    'Prime Day',
     'Kitchen',
     'Electronics',
     'Home & Garden',

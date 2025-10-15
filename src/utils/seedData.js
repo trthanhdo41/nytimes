@@ -290,6 +290,154 @@ const seedArticles = [
 <p>We have recommendations for different budgets and styles, from basic loungewear to elevated athletic wear.</p>`,
     mainImage: 'https://picsum.photos/id/901/800/600',
     featured: true
+  },
+
+  // Prime Day Category
+  {
+    title: 'The Best Prime Day Deals on Kitchen Essentials',
+    slug: 'best-prime-day-kitchen-deals',
+    category: 'Prime Day',
+    author: 'Wirecutter Staff',
+    excerpt: 'We\'ve rounded up the best Prime Day deals on kitchen gadgets, cookware, and appliances that we\'ve tested and recommend.',
+    content: `<p>Prime Day is one of the best times to save on kitchen essentials. We\'ve tested hundreds of products and these are the deals worth getting.</p>
+
+<h2>Top Kitchen Deals</h2>
+<p>From stand mixers to air fryers, here are the kitchen tools on sale that we actually recommend.</p>
+
+<h2>What to buy</h2>
+<p>Our top picks include discounts on KitchenAid mixers, Instant Pots, quality knife sets, and essential cookware.</p>`,
+    mainImage: 'https://picsum.photos/id/326/800/600',
+    featured: false
+  },
+  {
+    title: 'Prime Day Tech Deals: What\'s Actually Worth Buying',
+    slug: 'prime-day-tech-deals-worth-buying',
+    category: 'Prime Day',
+    author: 'Thorin Klosowski',
+    excerpt: 'Not all Prime Day tech deals are created equal. Here\'s what we recommend buying and what to skip.',
+    content: `<p>Prime Day brings thousands of tech deals, but only a fraction are actually worth your money. We\'ve done the research.</p>
+
+<h2>Best tech deals</h2>
+<p>We\'re seeing genuine discounts on tablets, headphones, smart home devices, and more products we\'ve tested.</p>
+
+<h2>What to avoid</h2>
+<p>Beware of inflated "deals" on unknown brands. Stick to products we\'ve vetted and recommend year-round.</p>`,
+    mainImage: 'https://picsum.photos/id/0/800/600',
+    featured: false
+  },
+  {
+    title: 'The Best Prime Day Deals on Home and Garden',
+    slug: 'best-prime-day-home-garden-deals',
+    category: 'Prime Day',
+    author: 'Jackie Reeve',
+    excerpt: 'Prime Day offers significant savings on home essentials. We\'ve found the best deals on products we trust.',
+    content: `<p>Looking to upgrade your home during Prime Day? These are the deals on vacuum cleaners, bedding, and home improvement tools worth considering.</p>
+
+<h2>Home essentials on sale</h2>
+<p>Major discounts on robot vacuums, air purifiers, and quality bedding from brands we recommend.</p>
+
+<h2>Garden deals</h2>
+<p>Save on outdoor furniture, grills, and gardening tools that we\'ve tested and approved.</p>`,
+    mainImage: 'https://picsum.photos/id/1015/800/600',
+    featured: false
+  },
+  {
+    title: 'Prime Day Beauty and Personal Care Deals',
+    slug: 'prime-day-beauty-deals',
+    category: 'Prime Day',
+    author: 'Wirecutter Beauty Team',
+    excerpt: 'The best Prime Day deals on skincare, hair care, and beauty tools that dermatologists and experts recommend.',
+    content: `<p>Prime Day brings deals on premium beauty products. We\'ve identified the best discounts on items recommended by dermatologists and beauty experts.</p>
+
+<h2>Skincare steals</h2>
+<p>Quality moisturizers, serums, and sunscreens from trusted brands at genuine discounts.</p>
+
+<h2>Hair and beauty tools</h2>
+<p>Save on hair dryers, straighteners, and electric toothbrushes we\'ve thoroughly tested.</p>`,
+    mainImage: 'https://picsum.photos/id/431/800/600',
+    featured: true
+  },
+
+  // Deals Category
+  {
+    title: 'The Best Tech Deals Right Now',
+    slug: 'best-tech-deals-right-now',
+    category: 'Deals',
+    author: 'Thorin Klosowski',
+    excerpt: 'We track thousands of deals daily. Here are the best discounts on tech products we\'ve tested and recommend.',
+    content: `<p>Our deal hunters track prices across the web to find genuine discounts on quality tech products.</p>
+
+<h2>Today\'s top tech deals</h2>
+<p>Current deals include laptops, tablets, wireless earbuds, and smart home devices that we\'ve tested and approved.</p>
+
+<h2>How we find deals</h2>
+<p>We use price tracking tools and our knowledge of typical pricing to identify real deals, not fake markdowns.</p>`,
+    mainImage: 'https://picsum.photos/id/180/800/600',
+    featured: false
+  },
+  {
+    title: 'Kitchen and Home Deals We\'re Watching',
+    slug: 'kitchen-home-deals-watching',
+    category: 'Deals',
+    author: 'Michael Sullivan',
+    excerpt: 'The best current deals on kitchen gadgets, cookware, and home essentials from brands we trust.',
+    content: `<p>We\'ve found significant discounts on kitchen and home products that we\'ve tested and recommend.</p>
+
+<h2>Kitchen deals</h2>
+<p>Quality cookware, small appliances, and kitchen tools at their lowest prices in months.</p>
+
+<h2>Home essentials</h2>
+<p>Save on vacuums, air purifiers, and other household items we use ourselves.</p>`,
+    mainImage: 'https://picsum.photos/id/225/800/600',
+    featured: false
+  },
+  {
+    title: 'Best Deals on Baby and Kid Products',
+    slug: 'best-deals-baby-kid-products',
+    category: 'Deals',
+    author: 'Kalee Thompson',
+    excerpt: 'Current deals on car seats, strollers, toys, and other baby gear that we\'ve rigorously tested.',
+    content: `<p>We monitor prices on baby products year-round and alert you to the best deals on items that meet our safety and quality standards.</p>
+
+<h2>Baby gear on sale</h2>
+<p>Discounts on car seats, strollers, and high chairs that have passed our safety tests.</p>
+
+<h2>Toys and essentials</h2>
+<p>Quality toys, baby monitors, and feeding supplies at great prices.</p>`,
+    mainImage: 'https://picsum.photos/id/433/800/600',
+    featured: false
+  },
+  {
+    title: 'Fitness and Wellness Deals Worth Your Time',
+    slug: 'fitness-wellness-deals',
+    category: 'Deals',
+    author: 'Ingrid Skjong',
+    excerpt: 'The best deals on exercise equipment, yoga gear, and wellness products we\'ve tested.',
+    content: `<p>Stay fit for less with these deals on quality exercise equipment and wellness products.</p>
+
+<h2>Exercise equipment</h2>
+<p>Discounts on yoga mats, resistance bands, dumbbells, and other fitness gear we recommend.</p>
+
+<h2>Wellness products</h2>
+<p>Save on massage guns, foam rollers, and recovery tools that actually work.</p>`,
+    mainImage: 'https://picsum.photos/id/659/800/600',
+    featured: false
+  },
+  {
+    title: 'Best Clothing and Style Deals Today',
+    slug: 'best-clothing-style-deals',
+    category: 'Deals',
+    author: 'Zoe Vanderweide',
+    excerpt: 'Current deals on quality clothing, shoes, and accessories that we\'ve tested for comfort and durability.',
+    content: `<p>We\'ve found the best deals on wardrobe essentials and accessories that we stand behind.</p>
+
+<h2>Clothing deals</h2>
+<p>Quality basics, outerwear, and activewear at significant discounts.</p>
+
+<h2>Shoes and accessories</h2>
+<p>Comfortable, durable footwear and bags from brands we trust.</p>`,
+    mainImage: 'https://picsum.photos/id/683/800/600',
+    featured: false
   }
 ];
 

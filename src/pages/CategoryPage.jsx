@@ -3,19 +3,33 @@ import { useParams } from 'react-router-dom'
 import ArticleCard from '../components/ArticleCard'
 import { getArticlesByCategory } from '../firebase/articleService'
 
+// Category slug to name mapping
+const categoryTitles = {
+  'prime-day': 'Prime Day',
+  kitchen: 'Kitchen',
+  electronics: 'Electronics',
+  'home-garden': 'Home & Garden',
+  'health-lifestyle': 'Health & Lifestyle',
+  tech: 'Tech',
+  'baby-kid': 'Baby & Kid',
+  style: 'Style',
+  gifts: 'Gifts',
+  deals: 'Deals',
+}
+
 const CategoryPage = () => {
   const { slug } = useParams()
   const [articles, setArticles] = useState([])
   const [loading, setLoading] = useState(true)
-  
+
   // Load articles from Firebase
   useEffect(() => {
     const loadArticles = async () => {
       try {
         setLoading(true)
         
-        // Convert slug to category name
-        const categoryName = slug.split('-').map(word => 
+        // Use categoryTitles mapping to get the correct category name
+        const categoryName = categoryTitles[slug] || slug.split('-').map(word => 
           word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ')
         
@@ -48,20 +62,6 @@ const CategoryPage = () => {
       month: 'long',
       day: 'numeric'
     })
-  }
-
-  // REMOVED: All dummy categoryData - only using Firebase data now
-  
-  const categoryTitles = {
-    kitchen: 'Kitchen',
-    electronics: 'Electronics',
-    'home-garden': 'Home & Garden',
-    'health-lifestyle': 'Health & Lifestyle',
-    tech: 'Tech',
-    'baby-kid': 'Baby & Kid',
-    style: 'Style',
-    gifts: 'Gifts',
-    deals: 'Deals',
   }
 
   return (
