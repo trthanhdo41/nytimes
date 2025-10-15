@@ -9,6 +9,7 @@ import ProductPage from './pages/ProductPage'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ArticleEditor from './pages/admin/ArticleEditor'
+import DealEditor from './pages/admin/DealEditor'
 import SeedData from './pages/admin/SeedData'
 
 function App() {
@@ -39,6 +40,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ArticleEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/deals/new"
+            element={
+              <ProtectedRoute>
+                <DealEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/deals/edit/:id"
+            element={
+              <ProtectedRoute>
+                <DealEditor />
               </ProtectedRoute>
             }
           />

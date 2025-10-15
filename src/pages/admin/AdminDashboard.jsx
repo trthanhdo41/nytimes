@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   PlusCircle, 
   Edit, 
@@ -8,14 +8,20 @@ import {
   Search,
   Eye,
   Star,
-  AlertCircle
+  AlertCircle,
+  DollarSign
 } from 'lucide-react';
 import { logout } from '../../firebase/authService';
 import { getAllArticles, deleteArticle } from '../../firebase/articleService';
+import { getAllDeals, deleteDeal } from '../../firebase/dealService';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'articles';
+  
   const [articles, setArticles] = useState([]);
+  const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -26,8 +32,12 @@ const AdminDashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    loadArticles();
-  }, []);
+    if (activeTab === 'deals') {
+      loadDeals();
+    } else {
+      loadArticles();
+    }
+  }, [activeTab]);
 
   const loadArticles = async () => {
     try {
@@ -38,6 +48,20 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error loading articles:', error);
       setError('Failed to load articles. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDeals = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllDeals();
+      setDeals(data);
+      setError('');
+    } catch (error) {
+      console.error('Error loading deals:', error);
+      setError('Failed to load deals. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -54,12 +78,17 @@ const AdminDashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteArticle(id);
-      setArticles(articles.filter(article => article.id !== id));
+      if (activeTab === 'deals') {
+        await deleteDeal(id);
+        setDeals(deals.filter(deal => deal.id !== id));
+      } else {
+        await deleteArticle(id);
+        setArticles(articles.filter(article => article.id !== id));
+      }
       setDeleteConfirm(null);
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Failed to delete article. Please try again.');
+      alert(`Failed to delete ${activeTab === 'deals' ? 'deal' : 'article'}. Please try again.`);
     }
   };
 
@@ -67,16 +96,21 @@ const AdminDashboard = () => {
     try {
       setDeletingAll(true);
       
-      // Delete all articles one by one
-      const deletePromises = articles.map(article => deleteArticle(article.id));
-      await Promise.all(deletePromises);
+      if (activeTab === 'deals') {
+        const deletePromises = deals.map(deal => deleteDeal(deal.id));
+        await Promise.all(deletePromises);
+        setDeals([]);
+      } else {
+        const deletePromises = articles.map(article => deleteArticle(article.id));
+        await Promise.all(deletePromises);
+        setArticles([]);
+      }
       
-      setArticles([]);
       setShowDeleteAllModal(false);
-      alert('All articles deleted successfully!');
+      alert(`All ${activeTab} deleted successfully!`);
     } catch (error) {
       console.error('Delete all error:', error);
-      alert('Failed to delete all articles. Some articles may remain.');
+      alert(`Failed to delete all ${activeTab}. Some may remain.`);
     } finally {
       setDeletingAll(false);
     }
@@ -87,6 +121,14 @@ const AdminDashboard = () => {
     article.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.author?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const filteredDeals = deals.filter(deal =>
+    deal.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    deal.store?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = activeTab === 'deals' ? filteredDeals : filteredArticles;
+  const totalItems = activeTab === 'deals' ? deals.length : articles.length;
 
   const formatDate = (date) => {
     if (!date) return 'N/A';
@@ -120,6 +162,35 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8" aria-label="Tabs">
+            <Link
+              to="/admin/dashboard?tab=articles"
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'articles'
+                  ? 'border-secondary text-secondary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Articles ({articles.length})
+            </Link>
+            <Link
+              to="/admin/dashboard?tab=deals"
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+                activeTab === 'deals'
+                  ? 'border-secondary text-secondary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <DollarSign className="w-4 h-4" />
+              Deals ({deals.length})
+            </Link>
+          </nav>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Actions Bar */}
@@ -128,14 +199,14 @@ const AdminDashboard = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search articles..."
+              placeholder={`Search ${activeTab}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
             />
           </div>
           <div className="flex gap-3">
-            {articles.length === 0 ? (
+            {totalItems === 0 && activeTab === 'articles' ? (
               <Link
                 to="/admin/seed"
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
@@ -143,21 +214,21 @@ const AdminDashboard = () => {
                 <PlusCircle className="w-5 h-5" />
                 Import Sample Data
               </Link>
-            ) : (
+            ) : totalItems > 0 && (
               <button
                 onClick={() => setShowDeleteAllModal(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
                 <Trash2 className="w-5 h-5" />
-                Delete All Articles
+                Delete All {activeTab === 'deals' ? 'Deals' : 'Articles'}
               </button>
             )}
             <Link
-              to="/admin/articles/new"
+              to={activeTab === 'deals' ? '/admin/deals/new' : '/admin/articles/new'}
               className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               <PlusCircle className="w-5 h-5" />
-              New Article
+              New {activeTab === 'deals' ? 'Deal' : 'Article'}
             </Link>
           </div>
         </div>
@@ -171,47 +242,155 @@ const AdminDashboard = () => {
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600">Total Articles</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{articles.length}</p>
+        {activeTab === 'articles' ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">Total Articles</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{articles.length}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">Featured</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {articles.filter(a => a.featured).length}
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">Categories</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {new Set(articles.map(a => a.category)).size}
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">This Month</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {articles.filter(a => {
+                  const date = new Date(a.createdAt);
+                  const now = new Date();
+                  return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+                }).length}
+              </p>
+            </div>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600">Featured</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {articles.filter(a => a.featured).length}
-            </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">Total Deals</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{deals.length}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">Active Deals</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {deals.filter(d => d.active !== false).length}
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600">This Month</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {deals.filter(d => {
+                  const date = new Date(d.createdAt);
+                  const now = new Date();
+                  return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+                }).length}
+              </p>
+            </div>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600">Categories</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {new Set(articles.map(a => a.category)).size}
-            </p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600">This Month</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {articles.filter(a => {
-                const date = new Date(a.createdAt);
-                const now = new Date();
-                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-              }).length}
-            </p>
-          </div>
-        </div>
+        )}
 
-        {/* Articles Table */}
+        {/* Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
-              <p className="text-gray-600 mt-4">Loading articles...</p>
+              <p className="text-gray-600 mt-4">Loading {activeTab}...</p>
             </div>
-          ) : filteredArticles.length === 0 ? (
+          ) : currentItems.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-gray-600">
-                {searchTerm ? 'No articles found matching your search.' : 'No articles yet. Create your first one!'}
+                {searchTerm ? `No ${activeTab} found matching your search.` : `No ${activeTab} yet. Create your first one!`}
               </p>
+            </div>
+          ) : activeTab === 'deals' ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Deal
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Prices
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Store
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredDeals.map((deal) => (
+                    <tr key={deal.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-start gap-3">
+                          {deal.image && (
+                            <img
+                              src={deal.image}
+                              alt={deal.title}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {deal.title}
+                            </p>
+                            {deal.note && (
+                              <p className="text-xs text-gray-500 mt-1">{deal.note}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm">
+                          <p className="font-semibold text-green-600">${deal.salePrice}</p>
+                          <p className="text-gray-400 line-through">${deal.originalPrice}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {deal.store}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          deal.active !== false ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {deal.active !== false ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/admin/deals/edit/${deal.id}`}
+                            className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
+                            title="Edit"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => setDeleteConfirm(deal.id)}
+                            className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <div className="overflow-x-auto">
