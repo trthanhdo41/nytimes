@@ -8,18 +8,14 @@ import {
   Search,
   Eye,
   Star,
-  AlertCircle,
-  DollarSign
+  AlertCircle
 } from 'lucide-react';
 import { logout } from '../../firebase/authService';
 import { getAllArticles, deleteArticle } from '../../firebase/articleService';
-import { getAllDeals, deleteDeal } from '../../firebase/dealService';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('articles'); // 'articles' or 'deals'
   const [articles, setArticles] = useState([]);
-  const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
